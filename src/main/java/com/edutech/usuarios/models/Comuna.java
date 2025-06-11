@@ -2,11 +2,16 @@ package com.edutech.usuarios.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "comuna")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class Comuna {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

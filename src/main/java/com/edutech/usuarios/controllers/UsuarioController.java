@@ -44,7 +44,7 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/registro")
     public ResponseEntity<UsuarioDTO> crearUsuario(@RequestBody CrearUsuarioRequest request) {
         try {
             UsuarioDTO usuarioCreado = usuarioService.crearUsuario(request);

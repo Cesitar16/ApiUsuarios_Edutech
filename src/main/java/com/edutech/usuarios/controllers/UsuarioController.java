@@ -3,6 +3,7 @@ package com.edutech.usuarios.controllers;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -81,5 +82,49 @@ public class UsuarioController {
         }
     }
 
+    @GetMapping("/hateoas/{id}")
+    public UsuarioDTO obtenerHATEOAS(@PathVariable Integer id) {
+        UsuarioDTO dto = usuarioService.buscarUsuarioPorId(id);
+
+        String gatewayUrl = "http://localhost:8888/api/proxy/usuarios";
+
+        // Link a sí mismo
+        dto.add(Link.of(gatewayUrl + "/hateoas/" + id).withSelfRel());
+
+        // Link a la lista de todos los usuarios
+        dto.add(Link.of(gatewayUrl + "/hateoas").withRel("todos-los-usuarios"));
+
+        // Link para eliminar
+        dto.add(Link.of(gatewayUrl + "/" + id).withRel("eliminar").withType("DELETE"));
+
+        // Link para actualizar
+        dto.add(Link.of(gatewayUrl + "/" + id).withRel("actualizar").withType("PUT"));
+
+        return dto;
+    }
+
+    /**
+     * Obtiene todos los usuarios y añade enlaces HATEOAS a cada uno.
+     */
+    @GetMapping("/hateoas")
+    public List<UsuarioDTO> listarHATEOAS() {
+        List<UsuarioDTO> usuarios = usuarioService.listarUsuarios();
+        String gatewayUrl = "http://localhost:8888/api/proxy/usuarios";
+
+        for (UsuarioDTO dto : usuarios) {
+
+            // Link a los detalles de este usuario
+            dto.add(Link.of(gatewayUrl + "/hateoas/" + dto.getId()).withSelfRel());
+
+            // Link para crear un nuevo usuario (apunta a /registro)
+            dto.add(Link.of(gatewayUrl + "/registro").withRel("crear-nuevo-usuario").withType("POST"));
+
+            dto.add(Link.of(gatewayUrl).withRel("editar-usuario").withType("PUT"));
+
+            dto.add(Link.of(gatewayUrl).withRel("eliminar-usuario").withType("DELETE"));
+        }
+
+        return usuarios;
+    }
     
 }
